@@ -2,6 +2,8 @@ const initUI = () => {
   const nameMessage = document.getElementById('name-message');
   const joinButton = document.getElementById('join-btn');
   const conferenceAliasInput = document.getElementById('alias-input');
+  const messageInput = document.getElementById('message-input');
+  const sendMessageBtn = document.getElementById('send-msg-btn');
   const leaveButton = document.getElementById('leave-btn');
   const lblDolbyVoice = document.getElementById('label-dolby-voice');
   const startVideoBtn = document.getElementById('start-video-btn');
@@ -52,6 +54,7 @@ const initUI = () => {
             lblDolbyVoice.innerHTML = `Dolby Voice is ${conf.params.dolbyVoice ? 'On' : 'Off'}.`;
 
             conferenceAliasInput.disabled = true;
+            sendMessageBtn.disabled = false;
             joinButton.disabled = true;
             leaveButton.disabled = false;
             startVideoBtn.disabled = false;
@@ -73,6 +76,7 @@ const initUI = () => {
 
         conferenceAliasInput.disabled = false;
         joinButton.disabled = false;
+        sendMessageBtn.disabled = true;
         leaveButton.disabled = true;
         startVideoBtn.disabled = true;
         stopVideoBtn.disabled = true;
@@ -82,6 +86,15 @@ const initUI = () => {
         stopScreenShareBtn.disabled = true;
         startRecordingBtn.disabled = true;
         stopRecordingBtn.disabled = true;
+      })
+      .catch((err) => console.error(err));
+  };
+
+  sendMessageBtn.onclick = () => {
+    // Send chat message
+    VoxeetSDK.command.send(messageInput.value)
+      .then(() => {
+        addChatMessageNode(VoxeetSDK.session.participant, messageInput.value)
       })
       .catch((err) => console.error(err));
   };
@@ -200,6 +213,15 @@ const removeVideoNode = (participant) => {
     videoNode.srcObject = null; // Prevent memory leak in Chrome
     videoNode.parentNode.removeChild(videoNode);
   }
+};
+
+// Add a new participant to the list
+const addChatMessageNode = (participant, message) => {
+  let messageNode = document.createElement('li');
+  messageNode.innerText = `${participant.info.name}\n${message}`;
+
+  const messagesList = document.getElementById('messages-list');
+  messagesList.appendChild(messageNode);
 };
 
 // Add a new participant to the list

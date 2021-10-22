@@ -18,6 +18,11 @@ const main = async () => {
     addParticipantNode(participant);
   });
 
+  // When a message is added to the conference
+  VoxeetSDK.command.on('received', (participant, message) => {
+    addChatMessageNode(participant, message);
+  });
+
   // When a stream is updated
   VoxeetSDK.conference.on('streamUpdated', (participant, stream) => {
     if (stream.type === 'ScreenShare') return;
